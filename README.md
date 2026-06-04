@@ -2,8 +2,6 @@
 
 <img width="1672" height="941" alt="INCORRECT" src="https://github.com/user-attachments/assets/02cff2b7-7540-40a9-a2b9-fa9eed451cdf" />
 
-<img width="1672" height="941" alt="Thermal Pilot screenshot" src="https://github.com/user-attachments/assets/f75ef0ff-8520-4dae-893d-6ad574b1a984" />
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS%2014%2B-blue.svg)](https://www.apple.com/macos/)
 [![Swift](https://img.shields.io/badge/Swift-6-orange.svg)](https://swift.org)
