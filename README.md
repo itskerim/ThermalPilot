@@ -1,6 +1,19 @@
 # Thermal Pilot
 
-Thermal Pilot is a local-only macOS menu-bar utility for quick fan, CPU, memory, and thermal status.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Platform: macOS](https://img.shields.io/badge/platform-macOS-blue.svg)](https://www.apple.com/macos/)
+[![Swift](https://img.shields.io/badge/Swift-5-orange.svg)](https://swift.org)
+[![Latest release](https://img.shields.io/github/v/release/itskerim/ThermalPilot)](https://github.com/itskerim/ThermalPilot/releases/latest)
+
+Thermal Pilot is a local-only macOS menu-bar utility for quick fan, CPU, memory, and thermal status. It sits beside Control Center and reads everything from public macOS APIs and SMC keys — no network, no telemetry, no accounts.
+
+## Download
+
+Grab the latest `.dmg` (or `.zip`) from the [**Releases page**](https://github.com/itskerim/ThermalPilot/releases/latest), open the disk image, and drag **Thermal Pilot** into Applications.
+
+> The app isn't notarized yet, so on first launch macOS may block it. Right-click the app → **Open**, or allow it under System Settings → Privacy & Security → "Open Anyway".
+
+<!-- TODO: add a screenshot of the menu-bar UI here, e.g. ![Thermal Pilot](assets/screenshot.png) -->
 
 ## Build and Test
 
