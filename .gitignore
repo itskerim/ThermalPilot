@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Swift Package Manager / build output
+.build/
+build/
+*.dmg
+*.zip
+Package.resolved
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+
+# Editor / tooling
+.claude/
