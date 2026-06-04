@@ -53,10 +53,6 @@ The panel most people open when their Mac feels slow:
 
 > A low **Free** number is normal — macOS uses idle RAM as cache on purpose. Watch **Pressure** and **Available** instead.
 
-## Built Entirely with AI
-
-Thermal Pilot was designed, built, and shipped with AI coding tools — not a workflow demo bolted on after the fact, but the actual way it was made.
-
 ## Documentation
 
 - [**METRICS.md**](docs/METRICS.md) — what every metric means, its API/SMC source, and how to act on it.
