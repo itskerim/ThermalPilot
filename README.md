@@ -1,5 +1,4 @@
 # Thermal Pilot
-<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/98c04612-67dc-4b3e-a844-b0d352867f0e" />
 
 <img width="1672" height="941" alt="a37f00c5-447b-40dc-a80f-c675de56ad25" src="https://github.com/user-attachments/assets/4f0b8335-5a44-482e-9eb3-355819c3bddb" />
 
