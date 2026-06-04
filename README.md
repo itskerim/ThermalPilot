@@ -1,6 +1,6 @@
 # Thermal Pilot
 
-<img width="1672" height="941" alt="f9b4c38d-e5b6-4c10-8dca-344247eccebe" src="https://github.com/user-attachments/assets/0ce93210-5b05-4429-b8ed-9ef2baf2a323" />
+<img width="1672" height="941" alt="671c131b-32cc-4b6b-8407-c897a6b20286 (1)" src="https://github.com/user-attachments/assets/f75ef0ff-8520-4dae-893d-6ad574b1a984" />
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
