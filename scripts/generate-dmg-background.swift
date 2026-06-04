@@ -16,12 +16,14 @@ guard let sourceBackground = NSImage(contentsOf: sourceURL) else {
 
 try FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true)
 
-let viewportSize = CGSize(width: 1000, height: 680)
-let canvasSize = CGSize(width: 2000, height: 1360)
-try writePNG(drawBackground(canvasSize: canvasSize, viewportSize: viewportSize, source: sourceBackground), to: outputURL)
+// The design is laid out in point space matching the DMG Finder window content.
+// writePNG emits it at 2x for retina crispness (1000x680 pt -> 2000x1360 px).
+let pointSize = CGSize(width: 1000, height: 680)
+let renderScale: CGFloat = 2
+try writePNG(drawBackground(pointSize: pointSize, source: sourceBackground), scale: renderScale, to: outputURL)
 
-func drawBackground(canvasSize: CGSize, viewportSize: CGSize, source: NSImage) -> NSImage {
-    let image = NSImage(size: canvasSize)
+func drawBackground(pointSize: CGSize, source: NSImage) -> NSImage {
+    let image = NSImage(size: pointSize)
     image.lockFocus()
     defer { image.unlockFocus() }
 
@@ -29,12 +31,7 @@ func drawBackground(canvasSize: CGSize, viewportSize: CGSize, source: NSImage) -
     context.setAllowsAntialiasing(true)
     context.setShouldAntialias(true)
 
-    let canvasRect = CGRect(origin: .zero, size: canvasSize)
-    let viewportRect = CGRect(origin: .zero, size: viewportSize)
-    drawImageCover(source, in: canvasRect)
-
-    context.saveGState()
-    context.translateBy(x: 0, y: canvasSize.height - viewportSize.height)
+    let viewportRect = CGRect(origin: .zero, size: pointSize)
     drawImageCover(source, in: viewportRect)
     context.setFillColor(NSColor.black.withAlphaComponent(0.13).cgColor)
     context.fill(viewportRect)
@@ -71,7 +68,6 @@ func drawBackground(canvasSize: CGSize, viewportSize: CGSize, source: NSImage) -
     drawFinderLabelHaze(context, center: CGPoint(x: 320, y: 226), width: 170)
     drawFinderLabelHaze(context, center: CGPoint(x: 720, y: 226), width: 158)
     drawArrow(context, appRightEdge: 416, applicationsLeftEdge: 624, centerY: 345)
-    context.restoreGState()
 
     return image
 }
@@ -197,9 +193,11 @@ func drawSoftEllipse(_ context: CGContext, center: CGPoint, size: CGSize, color:
     context.restoreGState()
 }
 
-func writePNG(_ image: NSImage, to url: URL) throws {
-    let pixelsWide = Int(image.size.width)
-    let pixelsHigh = Int(image.size.height)
+func writePNG(_ image: NSImage, scale: CGFloat, to url: URL) throws {
+    // Pixel buffer is `scale`x the point size; bitmap.size stays in points so the
+    // PNG is tagged as a 2x/retina image and Finder maps it back to point size.
+    let pixelsWide = Int(image.size.width * scale)
+    let pixelsHigh = Int(image.size.height * scale)
     guard let bitmap = NSBitmapImageRep(
         bitmapDataPlanes: nil,
         pixelsWide: pixelsWide,
