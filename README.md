@@ -5,140 +5,96 @@
 [![Swift](https://img.shields.io/badge/Swift-6-orange.svg)](https://swift.org)
 [![Latest release](https://img.shields.io/github/v/release/itskerim/ThermalPilot)](https://github.com/itskerim/ThermalPilot/releases/latest)
 
-**Thermal Pilot is a local-only macOS menu-bar utility for quick fan, CPU, memory, and thermal status.** It sits beside Control Center and reads everything from public macOS APIs and SMC keys — **no network, no telemetry, no accounts, no background daemon.**
+## See what your Mac is actually doing — right from your menu bar
 
-At a glance, you can see:
+Fans, CPU, memory, and temperature at a glance. No Activity Monitor, no terminal, no guessing.
 
-- 🌀 **Fan speeds** — live RPM for every fan, plus where each one sits in its min–max range.
-- 🧠 **What's eating your RAM** — top memory users grouped by app (so Chrome's 20 helper processes show up as one "Google Chrome" row), how much RAM is free, and a full Active / Wired / Compressed / Cached / Free breakdown.
-- ⚙️ **CPU load** — total usage across all cores, with the chip model.
-- 🌡️ **Temperature** — the hottest on-chip sensors (SoC, die, CPU proximity), in °C or °F.
-- 🚦 **Slowdown indicator** — a single plain-English verdict ("No obvious bottleneck", "Memory pressure", "Thermal limit", "CPU-bound") so you don't have to interpret raw numbers.
-
-> Heavy local model running? A runaway Node process? A browser quietly holding 11 GB? Thermal Pilot tells you which app it is and whether it's actually a problem — without sending a single byte off your machine.
-
----
-
-## Screenshots
-
-| Overview | Memory detail | Settings |
-| --- | --- | --- |
-| Fans, CPU, and memory at a glance | RAM breakdown + top users grouped by app | Refresh rate, menu-bar metric, °C/°F, login |
-
-<!-- TODO: drop PNGs into assets/ and reference them here, e.g. ![Overview](assets/overview.png) -->
-
----
+<!-- TODO: drop a hero screenshot here, e.g. ![Thermal Pilot](assets/screenshot.png) -->
 
 ## Download
 
-Grab the latest `.dmg` (or `.zip`) from the [**Releases page**](https://github.com/itskerim/ThermalPilot/releases/latest), open the disk image, and drag **Thermal Pilot** into Applications.
+[**Download the latest release**](https://github.com/itskerim/ThermalPilot/releases/latest) (macOS 14+, Apple Silicon & Intel).
 
-> [!NOTE]
-> The app isn't notarized yet, so on first launch macOS may block it. Right-click the app → **Open**, or allow it under **System Settings → Privacy & Security → "Open Anyway"**. See [docs/INSTALL.md](docs/INSTALL.md) for the full walkthrough.
+Open the `.dmg`, drag **Thermal Pilot** into Applications, and it lives in your menu bar. First launch needs a right-click → **Open** (it's not notarized yet) — see [INSTALL.md](docs/INSTALL.md).
 
-Thermal Pilot launches as a **menu-bar extra** (`LSUIElement` — no Dock icon, no window in the app switcher). Click the icon to open the panel.
+## What It Does
 
----
+Thermal Pilot lives in your menu bar and shows you what's happening under the hood — what's eating your RAM, how hard your CPU is working, how fast your fans are spinning, and how hot your Mac is running. Progress bars, plain-English labels, one clear verdict. No mental math required.
 
-## What you're looking at
+- **One glance.** Fans, CPU, memory, and temperature in one panel beside Control Center.
+- **Find the RAM hog.** Top memory users ranked and grouped by app — a 20-process Chrome shows as one row; a runaway `node` or local model shows up by name.
+- **Pressure, not just "used".** It surfaces macOS memory *pressure* — the number that actually predicts slowdowns — alongside a full Active / Wired / Compressed / Cached / Free breakdown.
+- **One-line verdict.** A "Slowdown" indicator tells you in English whether you're fine, warming up, CPU-bound, or hitting a thermal/memory limit.
+- **100% local.** No network, no telemetry, no accounts, no background daemon. Everything is read from public macOS APIs and SMC sensors.
+- **Honest about hardware.** If your Mac doesn't expose a fan or thermal sensor, it says "Unavailable" instead of faking a number.
+- **Lightweight.** Menu-bar only (no Dock icon), opens instantly, refreshes on a schedule you pick (1s / 3s / 5s / 10s).
+- **Yours to configure.** Pick the menu-bar metric (CPU % / Fan RPM / Temperature / icon), °C or °F, and launch-at-login.
 
-Every number in the UI maps to a specific macOS API or SMC sensor. Full reference: **[docs/METRICS.md](docs/METRICS.md)**. The short version:
+## What You Can See
 
-| Section | What it shows | Where it comes from |
+| Panel | What it shows | Source |
 | --- | --- | --- |
-| **Fans** | Live RPM, min–max range, % of range | SMC keys `FNum`, `F0Ac`, `F0Mn`, `F0Mx`, … |
-| **CPU** | Total usage %, core count, chip name | `host_statistics(HOST_CPU_LOAD_INFO)`, `sysctl machdep.cpu.brand_string` |
-| **Memory** | Used %, available, pressure, compressed, full breakdown, top apps | `host_statistics64(HOST_VM_INFO64)`, `ps -axo rss` |
-| **Temperature** | Hottest sensors in °C/°F | SMC keys `Tp09`, `Te05`, `TC0P`, `TC0E`, `TC0F` |
-| **Slowdown** | One-line bottleneck verdict | Computed from the above (`BottleneckAnalyzer`) |
+| **Fans** / live RPM, min–max range, % of range | how hard each fan is working | SMC keys (`FNum`, `F0Ac`, …) |
+| **CPU** / total usage %, core count, chip name | whole-machine load | `host_statistics` |
+| **Memory** / use %, pressure, breakdown, top apps | what's eating your RAM and how much is free | `host_statistics64` + `ps` |
+| **Temperature** / hottest sensors in °C/°F | how hot your Mac is running | SMC keys (`Tp09`, `Te05`, …) |
+| **Slowdown** / one-line bottleneck verdict | should you worry? | computed from the above |
 
-If a sensor isn't exposed on your Mac (common for fan/thermal SMC keys on some Apple Silicon models), Thermal Pilot shows **"Unavailable"** instead of failing or faking a number.
+Full reference — what every number means and how to act on it: [**docs/METRICS.md**](docs/METRICS.md).
 
-### Reading the memory panel
+## Reading the memory panel
 
-- **Memory use** — physical RAM in use (Active + Wired + Compressed) as a % of total. The "is my Mac full?" number.
-- **Pressure** — how hard macOS is working to keep RAM available. High pressure → swapping/compression → slowdowns. This is the number that actually predicts lag, not raw "used".
-- **RAM breakdown** — Active (apps in use), Wired (can't be moved), Compressed (squeezed to avoid disk), Cached (reclaimable file data), Free (instantly available).
-- **Top memory users** — sorted by resident memory. Multi-process apps (Chrome, ChatGPT Atlas, Codex, Figma, Electron apps) are **grouped under one expandable parent row**; a raw `node` or `python` process running a local model shows up by name so you can spot it.
+The panel most people open when their Mac feels slow:
 
-Tips for acting on it: high **pressure** (not just high "used") is what slows you down — macOS uses free RAM as cache on purpose, so a low "Free" number is normal and healthy. If pressure is high, the **Top memory users** list shows the app to quit first.
+- **Memory use** — how full RAM is (Active + Wired + Compressed). The "is my Mac full?" number.
+- **Pressure** — how hard macOS is working to keep memory available. **This is what predicts lag**, not raw "used".
+- **RAM breakdown** — Active, Wired, Compressed, Cached, Free, with hover explanations.
+- **Top memory users** — ranked by resident memory, grouped under their parent app (expand to see helpers), each with its real icon. A bare `node` / `python` / local-model process shows by name so you can spot the culprit and quit it.
 
----
+> A low **Free** number is normal — macOS uses idle RAM as cache on purpose. Watch **Pressure** and **Available** instead.
 
-## Build and Test
+## Built Entirely with AI
+
+Thermal Pilot was designed, built, and shipped with AI coding tools — not a workflow demo bolted on after the fact, but the actual way it was made.
+
+## Documentation
+
+- [**METRICS.md**](docs/METRICS.md) — what every metric means, its API/SMC source, and how to act on it.
+- [**ARCHITECTURE.md**](docs/ARCHITECTURE.md) — module layout, data flow, SMC access, packaging, tests.
+- [**INSTALL.md**](docs/INSTALL.md) — install, first-launch Gatekeeper steps, uninstall, privacy.
+- [**QA.md**](docs/QA.md) — diagnostic flags and how readings are validated.
+- [**FAQ.md**](docs/FAQ.md) — common questions and troubleshooting.
+
+## Build from source
 
 Requires macOS 14+ and a recent Swift toolchain (Swift 6 / Xcode 16+).
 
 ```bash
 swift test                       # run the unit test suite
-scripts/package-app.sh release   # build, ad-hoc sign, and package the app
+scripts/package-app.sh release   # build, ad-hoc sign, and package
+open "build/Thermal Pilot.app"   # run it
 ```
 
-The packaging script produces:
+Produces `build/Thermal Pilot.app`, plus a `.dmg` and `.zip` for sharing. Architecture and packaging details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-```text
-build/Thermal Pilot.app
-build/ThermalPilot-0.1.0.dmg
-build/ThermalPilot-0.1.0.zip
-```
+## Verify the numbers
 
-Run the freshly built app:
+Thermal Pilot ships diagnostics so you can audit every value against the raw sensors and Apple's own tools:
 
 ```bash
-open "build/Thermal Pilot.app"
+swift run FanUsage --qa-sample --count 300 --interval 1   # JSONL: raw vs displayed
+swift run FanUsage --diagnose-sensors                     # raw SMC key dump
 ```
 
-Architecture, module layout, and how packaging works: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
-
----
-
-## Share
-
-Upload or send `build/ThermalPilot-0.1.0.dmg`. People download it, open the disk image, and drag Thermal Pilot into Applications. A `.zip` is also generated for hosts that prefer zip downloads.
-
----
-
-## QA and live accuracy checks
-
-Thermal Pilot ships a JSONL sampler for validating the values shown in the UI against the raw provider snapshot:
-
-```bash
-swift run FanUsage --qa-sample --count 300 --interval 1
-```
-
-Each line includes raw CPU/RAM/fan/thermal readings, the exact display strings after rounding, provider timing, availability warnings, validation warnings, and the slowdown reason. Use `--temperature-unit fahrenheit` to validate Fahrenheit output.
-
-Inspect raw sensors directly:
-
-```bash
-swift run FanUsage --diagnose-sensors   # dumps every SMC key Thermal Pilot reads
-```
-
-Cross-check against Apple's own tools:
-
-```bash
-top -l 2 -n 0      # CPU
-vm_stat            # memory pages
-memory_pressure    # pressure
-```
-
-CPU and RAM are validated against public macOS APIs and may differ slightly from Activity Monitor because sampling windows and memory categories vary. Fan and thermal SMC readings are best-effort: QA checks decoding, stability, plausible bounds, and agreement with reference tools when available. Details: **[docs/QA.md](docs/QA.md)**.
-
----
-
-## Documentation
-
-- **[docs/METRICS.md](docs/METRICS.md)** — what every metric means, the API/SMC source behind it, and how to act on it.
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — module layout, data flow, and the bottleneck/grouping logic.
-- **[docs/INSTALL.md](docs/INSTALL.md)** — install, first-launch Gatekeeper steps, uninstall, privacy notes.
-- **[docs/QA.md](docs/QA.md)** — the diagnostic flags and how readings are validated.
-- **[docs/FAQ.md](docs/FAQ.md)** — common questions and troubleshooting.
-
----
+Cross-check with `top -l 2 -n 0`, `vm_stat`, and `memory_pressure`. Details: [docs/QA.md](docs/QA.md).
 
 ## Privacy
 
-Thermal Pilot makes **no network connections**, has **no analytics**, and stores nothing beyond a handful of `UserDefaults` preferences (refresh interval, temperature unit, menu-bar metric, launch-at-login). Everything is read locally from the kernel and the SMC. Verify it yourself — the entire data layer is in [`Sources/FanUsageCore`](Sources/FanUsageCore).
+No network connections. No analytics. No accounts. The only persisted state is four `UserDefaults` preferences (refresh interval, temperature unit, menu-bar metric, launch-at-login). Verify it yourself — the entire data layer is in [`Sources/FanUsageCore`](Sources/FanUsageCore).
+
+## Contributing
+
+Issues and PRs welcome — new sensors, bug fixes, and ideas. Keep it simple and test your changes.
 
 ## License
 
