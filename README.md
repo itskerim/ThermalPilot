@@ -1,6 +1,7 @@
 # Thermal Pilot
 
-<img width="1672" height="941" alt="INCORRECT" src="https://github.com/user-attachments/assets/02cff2b7-7540-40a9-a2b9-fa9eed451cdf" />
+<img width="1672" height="941" alt="Thermal Cover" src="https://github.com/user-attachments/assets/e4cc7449-7ed7-47b3-aa93-939f1daa197c" />
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS%2014%2B-blue.svg)](https://www.apple.com/macos/)
